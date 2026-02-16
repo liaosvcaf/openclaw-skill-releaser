@@ -77,8 +77,9 @@ Phase 2 (PARALLEL): Spawn subagents for approved skills, all publish simultaneou
 **Batch rules:**
 - Never serialize releases — spawn parallel subagents for Phase 1
 - Never block on one approval to start the next Phase 1
-- Collect all Phase 1 results, present ONE batch review message
-- Accept batch approvals ("approve all") or selective ("approve A,C")
+- Assign each skill a short unique ID (A, B, C...) in the batch review message
+- Collect all Phase 1 results, present ONE batch review message with short IDs
+- Accept batch approvals: "approve all" / "approve A,C" / "revise B: fix readme"
 - Run all Phase 2s in parallel after approval
 
 **Design principles:**
@@ -227,22 +228,40 @@ git push -u origin main
 ```
 
 ### Step 8: User Review
-Send repo link + brief summary to user via Telegram:
+For single skills, send review link. For batch releases, collect all Phase 1 results and send ONE message.
+
+**Single skill:**
 ```
 RELEASE REVIEW: {skill-name}
 
-Score: {X}/24 | OPSEC: CLEAN | Position: {novel/ahead}
-Review here: https://github.com/your-org/openclaw-skill-{name}
-
-{1-2 sentence summary of what the skill does}
-
-Agent recommendation: {APPROVE/REVISE}
+{score} | OPSEC: CLEAN
+{1-line description}
+https://github.com/your-org/openclaw-skill-{name}
 
 Reply: approve / revise:{feedback} / reject
 ```
 
-The repo IS the review artifact. User reviews actual files, not a summary.
-Wait for user response. Do not proceed without explicit approval.
+**Batch review (assign short IDs for easy approval):**
+```
+BATCH RELEASE REVIEW — {N} skills
+
+A. {skill-name} — {score} | CLEAN | {1-line description}
+https://github.com/your-org/openclaw-skill-{name}
+
+B. {skill-name} — {score} | CLEAN | {1-line description}
+https://github.com/your-org/openclaw-skill-{name}
+
+C. {skill-name} — {score} | CLEAN | {1-line description}
+https://github.com/your-org/openclaw-skill-{name}
+
+Reply: approve all / approve A,C / revise B:{feedback}
+```
+
+**Rules:**
+- Links on their own line (never in tables — not clickable on mobile)
+- Short IDs (A, B, C) for batch approval — user should never type full skill names
+- The repo IS the review artifact. User reviews actual files, not a summary.
+- Wait for user response. Do not proceed without explicit approval.
 
 ### Step 9: Erase History & Flip to Public (after user approval)
 Erase git history (may contain OPSEC fixes from earlier revisions) and make the repo public:
