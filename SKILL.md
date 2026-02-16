@@ -242,6 +242,11 @@ cd /tmp/skill-release-{name}
 git init
 git config user.email "agent@localhost"
 git config user.name "SkillEngineer"
+
+# Install OPSEC pre-commit hook — prevents sensitive data from entering git history
+cp /tmp/openclaw-knowledge/scripts/opsec-precommit-hook.sh .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+
 git add .
 git commit -m "v{version}: Initial release of {name}"
 git remote add origin https://github.com/your-org/openclaw-skill-{name}.git
