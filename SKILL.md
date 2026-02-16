@@ -51,8 +51,9 @@ A user with a finished SKILL.md should be able to say "release this skill" and t
 
 ## Automation Model
 
-The pipeline has two fully automated phases separated by one human gate:
+The pipeline has two fully automated phases separated by one human gate. **Both single and batch releases follow the same model.**
 
+### Single Skill
 ```
 Phase 1 (AUTO): Steps 1-7 — scaffold, validate, stage, scan, review, push
      ↓
@@ -61,19 +62,40 @@ Phase 1 (AUTO): Steps 1-7 — scaffold, validate, stage, scan, review, push
 Phase 2 (AUTO): Steps 9-12 — erase history, flip public, publish, verify scan, deliver
 ```
 
+### Batch Release (multiple skills)
+```
+Phase 1 (PARALLEL): Spawn subagents — one per skill, all run Phase 1 simultaneously
+     ↓
+  GATE: ONE batch review message with all repo links
+        User replies: "approve all" / "approve A,C; revise B: fix readme"
+     ↓
+Phase 2 (PARALLEL): Spawn subagents for approved skills, all publish simultaneously
+     ↓
+  DELIVERY: ONE batch summary with all links and scan results
+```
+
+**Batch rules:**
+- Never serialize releases — spawn parallel subagents for Phase 1
+- Never block on one approval to start the next Phase 1
+- Collect all Phase 1 results, present ONE batch review message
+- Accept batch approvals ("approve all") or selective ("approve A,C")
+- Run all Phase 2s in parallel after approval
+
 **Design principles:**
-- User says "release {skill}" once. Agent runs Phase 1 end-to-end without interruption.
-- Agent sends ONE message: the review link + recommendation. Then waits.
-- User replies with one word. Agent runs Phase 2 end-to-end without interruption.
+- User says "release these skills" once. Agent runs all Phase 1s in parallel without interruption.
+- Agent sends ONE message: all review links + recommendations. Then waits.
+- User replies once. Agent runs all Phase 2s in parallel without interruption.
+- Agent sends ONE delivery message with all results.
 - If any step fails, agent fixes it automatically and continues. Only report to user if unfixable.
 - Rate limits, retries, and delays are handled silently (sleep + retry, not "rate limited, should I try again?")
 
 **Anti-patterns (never do these):**
+- Do not serialize releases — always parallelize with subagents
+- Do not block on approval for skill A before starting Phase 1 for skill B
+- Do not send per-skill review messages — batch them
 - Do not ask "should I create the repo?" — just create it
-- Do not ask "should I run OPSEC scan?" — just run it
-- Do not report intermediate steps — only report the final review request and final delivery
+- Do not report intermediate steps — only the batch review and batch delivery
 - Do not ask about rate limits or transient errors — retry silently
-- Do not send multiple messages during a phase — batch everything into one
 
 ## Process
 
