@@ -157,9 +157,12 @@ If any check fails, report what needs fixing. Do not proceed.
 # Check if repo already exists
 gh repo view your-org/openclaw-skill-{name} 2>/dev/null
 
-# If not, create it
-gh repo create your-org/openclaw-skill-{name} --private --description "{skill description from skill.yml}"
+# If not, create it — CRITICAL: use the SANITIZED description, not the source skill.yml
+# Run OPSEC scan on the description string BEFORE passing to gh repo create
+gh repo create your-org/openclaw-skill-{name} --private --description "{sanitized description}"
 ```
+
+**OPSEC on repo metadata:** The description passed to `gh repo create` is public when the repo flips to public. It must be scanned for the same patterns as file contents (org names, personal info, internal project names). This is not covered by file-based scanners — it must be checked explicitly.
 
 ### Step 4: Prepare Release Content
 Copy ONLY the skill directory content to a clean staging area:
@@ -304,6 +307,11 @@ git push -f origin main
 
 # Flip visibility
 gh repo edit your-org/openclaw-skill-{name} --visibility public
+
+# Verify repo metadata is OPSEC-clean (description, topics are now public)
+gh repo view your-org/openclaw-skill-{name} --json description,repositoryTopics -q '.description + " " + (.repositoryTopics | join(" "))'
+# Manually check output for org names, personal info, internal project names
+# If dirty: gh repo edit your-org/openclaw-skill-{name} --description "{clean description}"
 ```
 
 Single commit, clean history, one repo. No dual-repo complexity.
