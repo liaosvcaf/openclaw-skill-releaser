@@ -85,7 +85,7 @@ Before any quality checks, generate all missing structure files from the existin
 | File | Source | Generation Method |
 |------|--------|-------------------|
 | `skill.yml` | SKILL.md frontmatter + triggers | Extract name, description, version, triggers from SKILL.md |
-| `README.md` | SKILL.md description + usage | GitHub landing page: what it does, when to use, example commands |
+| `README.md` | SKILL.md description + usage | GitHub landing page for humans: what it does, how to install, future work. NOT agent instructions. |
 | `CHANGELOG.md` | Version from skill.yml + git log | `## v{version} — {date}` + summary of current state |
 | `tests/test-triggers.json` | SKILL.md triggers + "When to Use" | `shouldTrigger` from triggers list, `shouldNotTrigger` from anti-patterns |
 | `scripts/` | Create directory | Empty dir or placeholder README if no scripts needed |
