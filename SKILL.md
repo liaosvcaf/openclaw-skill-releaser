@@ -372,18 +372,9 @@ OpenClaw Scan: {verdict} ({confidence})
 {1-line description}
 ```
 
-### Step 14: Post-Release Bookkeeping (MANDATORY — do not skip)
-Close the loop on internal tracking. This step is the caller's responsibility but is NOT optional.
+### Pipeline Ends Here
 
-1. **Update STATUS.json** — set `released: true`, add `clawhub` URL, `releaseVersion`, `releaseDate`
-2. **Update TODO.md** — mark the release task as completed with date
-3. **Update REFACTORY-SYSTEM.md Skill ID Registry** — add release status if column exists
-4. **Convert to public submodule** (if skill was a directory in openclaw-knowledge):
-   - Remove directory, add as submodule pointing to public repo
-   - Commit and push parent repo
-5. **Update memory** — log the release in daily memory file
-
-**This step exists because forgetting to update tracking is a proven failure mode.** Without it, future sessions operate on stale data and re-propose work that is already done.
+Skill-releaser scope ends at Step 13 (delivery). Post-release bookkeeping (STATUS.json updates, submodule conversion, memory logging) is a **refactory system responsibility**, not a release pipeline responsibility. See REFACTORY-SYSTEM.md "Post-Release Stage."
 
 ## Error Handling
 
