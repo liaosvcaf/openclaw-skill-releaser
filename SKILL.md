@@ -372,12 +372,18 @@ OpenClaw Scan: {verdict} ({confidence})
 {1-line description}
 ```
 
-**Update tracking** — record in memory or STATUS.json:
-- GitHub URL (public)
-- ClawhHub URL and slug
-- Release date and version
-- Security scan verdicts (VirusTotal + OpenClaw)
-- Review dates (agent and user)
+### Step 14: Post-Release Bookkeeping (MANDATORY — do not skip)
+Close the loop on internal tracking. This step is the caller's responsibility but is NOT optional.
+
+1. **Update STATUS.json** — set `released: true`, add `clawhub` URL, `releaseVersion`, `releaseDate`
+2. **Update TODO.md** — mark the release task as completed with date
+3. **Update REFACTORY-SYSTEM.md Skill ID Registry** — add release status if column exists
+4. **Convert to public submodule** (if skill was a directory in openclaw-knowledge):
+   - Remove directory, add as submodule pointing to public repo
+   - Commit and push parent repo
+5. **Update memory** — log the release in daily memory file
+
+**This step exists because forgetting to update tracking is a proven failure mode.** Without it, future sessions operate on stale data and re-propose work that is already done.
 
 ## Error Handling
 
