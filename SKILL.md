@@ -332,26 +332,3 @@ OpenClaw Scan: {verdict} ({confidence})
 **Batch readiness check:**
 "Which skills are ready to publish?"
 
-## Future Work
-
-### Multi-Agent Architecture
-When release volume justifies it, refactor from single-agent to multi-agent:
-
-```
-Dispatcher (coordinator)
-  ├── Scaffolder (Steps 1-2): boilerplate generation, structure validation → flash-lite
-  ├── Publisher (Steps 3-10): git ops, staging, OPSEC, push, publish → flash-lite
-  ├── Verifier (Step 11): browser-based security scan verification → sonnet
-  └── Dispatcher delivers Step 12 summary to user
-```
-
-**Triggers to refactor:**
-- Releasing 5+ skills per session (context bloat)
-- Browser verification failures cascading into re-runs of publishing steps
-- Rate limit cascades requiring full pipeline restarts
-
-**Prerequisite:** Ship 3-5 more skills through single-agent pipeline first. Refactor with evidence, not speculation.
-
-### ClawhHub Version Purge
-ClawhHub currently has no per-version deletion. `delete` is soft-delete (hides skill, preserves versions). If a version leaks PII, the only option is full delete + re-publish under same slug (loses download counts) or contacting ClawhHub support. Monitor for a `clawhub delete-version` command in future CLI releases.
-

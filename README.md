@@ -37,3 +37,23 @@ Takes any skill with a finished SKILL.md and handles everything needed to publis
 ## License
 
 MIT
+
+## Future Work
+
+### Multi-Agent Architecture
+When release volume justifies it, refactor from single-agent to multi-agent:
+
+```
+Dispatcher (coordinator)
+  ├── Scaffolder (Steps 1-2): boilerplate, validation → flash-lite
+  ├── Publisher (Steps 3-10): git ops, staging, OPSEC, publish → flash-lite
+  ├── Verifier (Step 11): browser-based scan verification → sonnet
+  └── Dispatcher delivers Step 12 summary
+```
+
+**Triggers:** 5+ skills per session, browser failures cascading into re-runs, rate limit cascades.
+
+**Prerequisite:** Ship 3-5 more skills through single-agent first. Refactor with evidence, not speculation.
+
+### ClawhHub Version Purge
+No per-version deletion exists. `delete` is soft-delete (preserves versions). If a version leaks PII: full delete + re-publish (loses download counts) or contact ClawhHub support. Monitor for `clawhub delete-version` in future CLI releases.
