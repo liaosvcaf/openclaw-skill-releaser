@@ -192,13 +192,21 @@ Add release files if missing:
 - `README.md` (must work as GitHub landing page for strangers)
 - `.gitignore`
 
-### Step 5: OPSEC Deep Scan
+### Step 5: Release Content Validation (HARD GATE)
+```bash
+bash scripts/validate-release-content.sh /tmp/skill-release-{name}
+```
+**This is a deterministic script that blocks pushes if the release directory contains repo-level files (USER.md, MEMORY.md, audits/, etc.), has too many files (>50), or contains suspicious file types (logs, images, PDFs).**
+
+Must return SAFE (exit 0). If BLOCKED, you copied from the wrong directory. **Do NOT proceed. Fix the source path and re-copy.**
+
+### Step 6: OPSEC Deep Scan
 ```bash
 bash scripts/opsec-scan.sh /tmp/skill-release-{name}
 ```
 Must return CLEAN (exit 0). If violations found, fix them in the release copy. Do NOT modify the source in openclaw-knowledge — keep the internal version as-is.
 
-### Step 6: Agent Review
+### Step 7: Agent Review
 Generate review document:
 ```markdown
 # Release Review: {skill-name}
@@ -227,7 +235,7 @@ APPROVE / REVISE: {reasons}
 
 Save to `openclaw-knowledge/reviews/{name}-release-review.md`
 
-### Step 7: Push to Private Staging Repo
+### Step 8: Push to Private Staging Repo
 Push sanitized content so user can review the actual repo on any device (phone, laptop):
 ```bash
 cd /tmp/skill-release-{name}
@@ -241,7 +249,7 @@ git branch -M main
 git push -u origin main
 ```
 
-### Step 8: User Review
+### Step 9: User Review
 For single skills, send review link. For batch releases, collect all Phase 1 results and send ONE message.
 
 **Single skill:**
@@ -277,7 +285,7 @@ Reply: approve all / approve A,C / revise B:{feedback}
 - The repo IS the review artifact. User reviews actual files, not a summary.
 - Wait for user response. Do not proceed without explicit approval.
 
-### Step 9: Erase History & Flip to Public (after user approval)
+### Step 10: Erase History & Flip to Public (after user approval)
 Erase git history (may contain OPSEC fixes from earlier revisions) and make the repo public:
 ```bash
 cd /tmp/skill-release-{name}
@@ -295,7 +303,7 @@ gh repo edit your-org/openclaw-skill-{name} --visibility public
 
 Single commit, clean history, one repo. No dual-repo complexity.
 
-### Step 10: Publish to ClawhHub
+### Step 11: Publish to ClawhHub
 ```bash
 clawhub publish /tmp/skill-release-{name} \
   --slug {name} \
@@ -304,7 +312,7 @@ clawhub publish /tmp/skill-release-{name} \
   --changelog "{summary of changes}"
 ```
 
-### Step 11: Verify Security Scan (Browser Required)
+### Step 12: Verify Security Scan (Browser Required)
 ClawhHub automatically scans all published skills via VirusTotal (Code Insight) and OpenClaw's own scanner. **Do not consider the release complete until scans are reviewed.**
 
 **Use the browser tool to check scan results — ClawhHub pages require JS rendering:**
@@ -326,7 +334,7 @@ browser snapshot (refs=aria)
 
 | Verdict | Meaning | Action |
 |---------|---------|--------|
-| Benign (both) | Clean, auto-approved | Proceed to Step 12 |
+| Benign (both) | Clean, auto-approved | Proceed to Step 13 |
 | Pending | Still processing | Wait 2 minutes, re-snapshot |
 | Suspicious (undeclared permissions) | Skill needs privileged access not in metadata | Add `permissions` to skill.yml, bump version, re-publish |
 | Suspicious (other) | Flagged behavior | Review detail text. If false positive, contact OpenClaw security team. If real, fix and re-publish |
@@ -345,7 +353,7 @@ browser snapshot (refs=aria)
 
 5. **If VirusTotal is still Pending** after 5 minutes, proceed to Step 12 but note it in the delivery. The scan completes asynchronously.
 
-### Step 12: Deliver
+### Step 13: Deliver
 Confirm the release is live and deliver all links and scan status to the user:
 
 ```
