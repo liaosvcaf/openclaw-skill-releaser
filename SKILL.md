@@ -355,21 +355,3 @@ Dispatcher (coordinator)
 ### ClawhHub Version Purge
 ClawhHub currently has no per-version deletion. `delete` is soft-delete (hides skill, preserves versions). If a version leaks PII, the only option is full delete + re-publish under same slug (loses download counts) or contacting ClawhHub support. Monitor for a `clawhub delete-version` command in future CLI releases.
 
-### Post-Release: Convert to Public Submodule
-After successful release, convert the skill in the knowledge repo from a regular directory to a submodule pointing to the public repo:
-
-```bash
-cd /path/to/openclaw-knowledge
-git rm -rf skills/{name}
-rm -rf skills/{name}
-git submodule add https://github.com/your-org/openclaw-skill-{name}.git skills/{name}
-git add .gitmodules skills/{name}
-git commit -m "skills/{name}: convert to submodule → public repo"
-git push origin main
-```
-
-**From this point forward:**
-- All development happens in the public repo
-- Knowledge repo tracks it as a read-only submodule reference
-- `git submodule update --remote skills/{name}` pulls latest
-- No duplicate files, single source of truth
