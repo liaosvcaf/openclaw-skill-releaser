@@ -162,7 +162,7 @@ gh repo create your-org/openclaw-skill-{name} --private --description "{skill de
 ```
 
 ### Step 4: Prepare Release Content
-Copy sanitized skill content to a clean directory:
+Copy ONLY the skill directory content to a clean staging area:
 ```bash
 mkdir -p /tmp/skill-release-{name}
 cp -r skills/{name}/* /tmp/skill-release-{name}/
@@ -171,6 +171,20 @@ cp -r skills/{name}/* /tmp/skill-release-{name}/
 rm -f /tmp/skill-release-{name}/WORKSPACE.md
 rm -f /tmp/skill-release-{name}/.gitignore
 rm -rf /tmp/skill-release-{name}/_meta.json
+rm -rf /tmp/skill-release-{name}/.clawhub
+```
+
+**CRITICAL VALIDATION — verify before proceeding:**
+```bash
+# The release directory must contain ONLY skill files.
+# If you see ANY of these, you copied from the wrong directory — STOP and fix:
+#   - USER.md, MEMORY.md, AGENTS.md, SOUL.md (workspace/repo root files)
+#   - audits/, shared/, scripts/ (repo directories)
+#   - memory/, slides/, projects/ (personal data)
+#   - .gitmodules (repo root)
+ls /tmp/skill-release-{name}/
+# Expected: SKILL.md, skill.yml, README.md, CHANGELOG.md, LICENSE, tests/, references/, scripts/
+# If file count exceeds ~15 files, something is wrong. Verify source path.
 ```
 
 Add release files if missing:
