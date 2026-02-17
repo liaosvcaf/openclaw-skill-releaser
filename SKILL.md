@@ -394,6 +394,32 @@ Skill-releaser scope ends at Step 13 (delivery). Post-release bookkeeping (STATU
 | clawhub publish fails | CLI not installed or auth | Run `npm install -g clawhub`, authenticate |
 | User rejects | Feedback provided | Address feedback, restart from Step 4 |
 
+## Configuration
+
+No persistent configuration required. The pipeline uses environment-level tools
+(`gh`, `clawhub`, `git`) that must be authenticated before use.
+
+**Required tools:**
+
+| Tool | Purpose | Check |
+|------|---------|-------|
+| `gh` CLI | GitHub repo creation, visibility changes | `gh auth status` |
+| `clawhub` CLI | Publish to ClawhHub registry | `clawhub whoami` |
+| `git` | Version control | Built-in |
+| `python3` | OPSEC scanner (optional) | `python3 --version` |
+
+**Pipeline scripts (in `scripts/`):**
+
+| Script | Purpose |
+|--------|---------|
+| `validate-structure.sh` | Score skill structure completeness (8 checks) |
+| `validate-release-content.sh` | Block placeholder text, empty files |
+| `opsec-scan.sh` | Scan for sensitive data before public release |
+
+**Org/username:** Update `your-org` in the pipeline steps to your GitHub
+username or org. The clawhub `--slug` argument uses the skill's `name` field
+from `skill.yml`.
+
 ## Examples
 
 **Release a specific skill:**
