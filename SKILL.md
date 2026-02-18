@@ -361,7 +361,7 @@ D-##: Publish {display_name} v{version} (slug: {slug}) to ClawhHub? — yes/no
 
 Only proceed to Step 11.5 if My Lord has explicitly approved this specific publish in the current session.
 
-### Step 11.5: Execute Publish (APPROVAL REQUIRED)
+### Step 11.5: Execute Publish + Verify (APPROVAL REQUIRED)
 
 **Only run this step after receiving explicit "D-## yes" from My Lord.**
 
@@ -373,7 +373,7 @@ clawhub publish /tmp/skill-release-{name} \
   --changelog "{summary of changes from CHANGELOG.md}"
 ```
 
-### Step 11.5: Post-Publish Verification (Content Match)
+**Post-publish verification — verify the live listing matches skill.yml exactly:**
 
 After publishing, verify the live listing matches the source skill.yml exactly.
 **This step catches wrong titles, version mismatches, and stale metadata before delivery.**
