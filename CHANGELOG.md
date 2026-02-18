@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0] - 2026-02-17
+### Changed
+- Step 11 now prepares publish package and logs D-## approval request — does NOT execute publish
+- Step 11.5 is the actual publish execution, gated on explicit "D-## yes" from My Lord
+- ClawhHub publish is now a hard-gated external action, not an autonomous step
+
+## 
+
 ## v1.4.2 — 2026-02-18
 
 - **Step 11: parameter extraction from skill.yml** — `--slug`, `--name`, `--version` are now
