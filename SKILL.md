@@ -1,7 +1,7 @@
 ---
 name: skill-releaser
 description: Release skills to ClawhHub through the full publication pipeline — auto-scaffolding, OPSEC scan, dual review (agent + user), force-push release, security scan verification. Use when releasing a skill, preparing a skill for release, reviewing a skill for publication, or checking release readiness.
-version: 1.4.0
+version: 1.4.2
 triggers:
   - release skill
   - publish skill
@@ -131,7 +131,7 @@ If this skill has been published before, bump the version before proceeding:
 
 1. **Check current published version:**
 ```bash
-clawhub search {name}
+clawhub inspect {slug}
 ```
 
 2. **Bump version** in both `skill.yml` and `SKILL.md` frontmatter:
@@ -141,7 +141,19 @@ clawhub search {name}
 
 3. **Update CHANGELOG.md** with new version entry describing what changed
 
-Skip this step for first-time releases.
+4. **Verify `display_name` is set in `skill.yml`** — this is the human-readable title shown on ClawhHub.
+   It must be set explicitly; never derive it from the slug or guess it.
+   If missing, add it now:
+   ```yaml
+   display_name: "Human Readable Title"  # Required — used as ClawhHub listing title
+   ```
+   Rules:
+   - Title case, plain English, no jargon
+   - Describes what the skill does, not how it's implemented
+   - Example: slug `autonomous-task-runner` → `display_name: "Autonomous Task Runner"`
+   - Example: slug `skill-releaser` → `display_name: "Skill Releaser"`
+
+Skip this step for first-time releases (but still verify `display_name` exists).
 
 ### Step 2: Readiness Check
 Verify the skill directory is complete:
@@ -317,13 +329,69 @@ gh repo view your-org/openclaw-skill-{name} --json description,repositoryTopics 
 Single commit, clean history, one repo. No dual-repo complexity.
 
 ### Step 11: Publish to ClawhHub
+
+**Before running the publish command, extract all parameters from `skill.yml` — never guess or hardcode:**
+
+```bash
+# Extract publish parameters directly from skill.yml
+SLUG=$(grep '^name:' /tmp/skill-release-{name}/skill.yml | awk '{print $2}')
+DISPLAY_NAME=$(grep '^display_name:' /tmp/skill-release-{name}/skill.yml | sed 's/display_name: *//' | tr -d '"')
+VERSION=$(grep '^version:' /tmp/skill-release-{name}/skill.yml | awk '{print $2}')
+
+echo "slug:         $SLUG"
+echo "display_name: $DISPLAY_NAME"
+echo "version:      $VERSION"
+
+# Verify all three are non-empty before proceeding
+if [ -z "$SLUG" ] || [ -z "$DISPLAY_NAME" ] || [ -z "$VERSION" ]; then
+  echo "ERROR: Missing slug, display_name, or version in skill.yml — fix before publishing"
+  exit 1
+fi
+```
+
+If `display_name` is missing from `skill.yml`, add it now (see Step 1.5). Do not proceed with an empty display name.
+
 ```bash
 clawhub publish /tmp/skill-release-{name} \
-  --slug {name} \
-  --name "{Display Name}" \
-  --version {version} \
-  --changelog "{summary of changes}"
+  --slug "$SLUG" \
+  --name "$DISPLAY_NAME" \
+  --version "$VERSION" \
+  --changelog "{summary of changes from CHANGELOG.md}"
 ```
+
+### Step 11.5: Post-Publish Verification (Content Match)
+
+After publishing, verify the live listing matches the source skill.yml exactly.
+**This step catches wrong titles, version mismatches, and stale metadata before delivery.**
+
+```bash
+clawhub inspect "$SLUG" 2>&1
+```
+
+Compare the output against skill.yml:
+
+| Field | Expected (from skill.yml) | Actual (from clawhub inspect) | Match? |
+|-------|--------------------------|-------------------------------|--------|
+| Display name | `display_name` value | First line of inspect output | ✅ / ❌ |
+| Version | `version` value | `Latest:` field | ✅ / ❌ |
+| Description | First sentence of `description` | `Summary:` field (truncated) | ✅ / ❌ |
+| Owner | your ClawhHub username | `Owner:` field | ✅ / ❌ |
+
+**If any field does not match:**
+1. Do NOT proceed to Step 12
+2. Identify the mismatch (wrong `--name`, wrong `--slug`, stale `skill.yml`)
+3. Fix the source (skill.yml or publish command), bump patch version, republish
+4. Re-run Step 11.5 until all fields match
+5. Only proceed to Step 12 when the table shows ✅ on all rows
+
+**Common mismatches and fixes:**
+
+| Mismatch | Cause | Fix |
+|----------|-------|-----|
+| Wrong display name | `display_name` missing from skill.yml; name was guessed | Add `display_name` to skill.yml, republish |
+| Wrong version | skill.yml not updated before publish | Bump version in skill.yml, republish |
+| Wrong slug | `name` field in skill.yml doesn't match intended slug | Fix `name` in skill.yml or use correct `--slug` |
+| Wrong owner | Published under wrong account | Check `clawhub whoami`, re-authenticate if needed |
 
 ### Step 12: Verify Security Scan (Browser Required)
 ClawhHub automatically scans all published skills via VirusTotal (Code Insight) and OpenClaw's own scanner. **Do not consider the release complete until scans are reviewed.**

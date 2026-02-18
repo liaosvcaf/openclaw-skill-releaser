@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.4.2 — 2026-02-18
+
+- **Step 11: parameter extraction from skill.yml** — `--slug`, `--name`, `--version` are now
+  extracted directly from skill.yml before publish. Guards against wrong/guessed display names.
+  Fails loudly if `display_name` is missing.
+- **Step 11.5: post-publish verification** — after every publish, `clawhub inspect` is run and
+  output compared against skill.yml (name, version, description, owner). Mismatch → fix and
+  republish before proceeding to security scan or delivery.
+- **Step 1.5: `display_name` field required** — added to scaffolding and version-bump checklist.
+  Title case, plain English, must be set explicitly in skill.yml.
+- Fixes root cause of "Skill Release Task Runner" wrong title incident (2026-02-18).
+
+## v1.4.1 — 2026-02-17
+
+- Add `scripts/` directory with validate-structure.sh, validate-release-content.sh, opsec-scan.sh
+- Add `## Configuration` section
+
 ## v1.4.0 — 2026-02-16
 
 - Define two-phase automation model: Phase 1 (auto) → User Gate → Phase 2 (auto)
