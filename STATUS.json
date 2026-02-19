@@ -1,7 +1,7 @@
 {
   "_generated": "Auto-generated from root STATUS.json. Do not edit manually.",
   "skill": "skill-releaser",
-  "stage": "test",
+  "stage": "released",
   "auditScore": 81,
   "auditDate": "2026-02-17",
   "competitivePosition": "novel",
@@ -11,13 +11,13 @@
   "lastRefactored": "2026-02-17",
   "testsPassing": null,
   "opsecClean": true,
-  "notes": "Meta-skill for releasing skills — 20 views on ClawhHub. Novel — no equivalent on ClawhHub. | Scripts added 2026-02-17: validate-structure.sh, validate-release-content.sh, opsec-scan.sh. Republished as v1.4.1.",
+  "notes": "Meta-skill for releasing skills. v1.5.0: publish approval gate (Step 11 prepares D-## request, Step 11.5 executes after yes). ClawhHub publish hard-gated. Published via curl workaround 2026-02-19.",
   "id": "AK",
   "released": true,
   "clawhub": "https://clawhub.ai/chunhualiao/skill-releaser",
   "compositionRole": "standalone",
   "auditRubric": "rubric-audit-b4",
   "auditMaxScore": 90,
-  "clawhubVersion": "1.4.2",
+  "clawhubVersion": "1.5.0",
   "clawhubSlug": "skill-releaser"
 }
