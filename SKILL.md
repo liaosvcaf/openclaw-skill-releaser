@@ -1,7 +1,7 @@
 ---
 name: skill-releaser
 description: Release skills to ClawhHub through the full publication pipeline — auto-scaffolding, OPSEC scan, dual review (agent + user), force-push release, security scan verification. Use when releasing a skill, preparing a skill for release, reviewing a skill for publication, or checking release readiness.
-version: 1.4.2
+version: 1.5.0
 triggers:
   - release skill
   - publish skill
